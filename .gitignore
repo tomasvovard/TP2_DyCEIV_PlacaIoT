@@ -1,0 +1,20 @@
+# Compiled files
+*.bin
+*.elf
+*.hex
+*.o
+*.a
+*.d
+
+# Logs / cache / temporary
+*.log
+*.tmp
+*.swp
+
+# IDE specific
+.vscode/
+.idea/
+
+# Mac / Windows trash
+.DS_Store
+Thumbs.db
