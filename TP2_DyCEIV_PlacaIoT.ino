@@ -1,83 +1,149 @@
 #include <SPI.h>
+#include "soc/gpio_reg.h"
 
-// Definiciones de pines del bus VSPI
 #define SPI_SCK_PIN  18
 #define SPI_MISO_PIN 19
 #define SPI_MOSI_PIN 23
 #define SPI_SS_PIN    5
 
-#define CS_A0 5
-#define CS_A1 15
-#define CS_A2 13
+#define SPI_CLK 1000000 // 1 MHz
+
+#define CS_A0_PIN 5
+#define CS_A1_PIN 15
+#define CS_A2_PIN 13
+#define CS_A0_MASK 0b00000001 //001
+#define CS_A1_MASK 0b00000010 //010
+#define CS_A2_MASK 0b00000100 //100
+
+#define CS_IN_LD      0x00 //000
+#define CS_IN_CE      0x05 //101
+#define CS_OUT_LATCH  0x01 //001
+#define CS_ADC_SAR    0x03 //011
+#define CS_ADC_SD     0x02 //010
+#define CS_DAC_SYNC   0x04 //100
+#define CS_NONE       0x07 //111
 
 SPIClass *vspi = nullptr;
 
-hw_timer_t* timer = nullptr;
-volatile bool timerReady = false;
-
-void IRAM_ATTR onTimer() {
-  timerReady = true;
-}
-
 void spi_mux_set(byte mux){
 
-  digitalWrite(CS_A0, 0b00000001 & mux);
-  digitalWrite(CS_A1, 0b00000010 & mux);
-  digitalWrite(CS_A2, 0b00000100 & mux);
+  /*Máscara con los pines de Ao..A2*/
+  const uint32_t mask_all = (1u << CS_A0_PIN) | (1u << CS_A1_PIN) | (1u << CS_A2_PIN);
 
+  /*Pines a setear*/
+  uint32_t mask_set = 0;
+  if(CS_A0_MASK & mux) mask_set |= (1u << CS_A0_PIN);
+  if(CS_A1_MASK & mux) mask_set |= (1u << CS_A1_PIN);
+  if(CS_A2_MASK & mux) mask_set |= (1u << CS_A2_PIN);
+
+  /*Pines a resetear*/
+  uint32_t mask_clear = mask_all & ~mask_set;
+
+  /*Actualizar pines*/
+  if(mask_clear) REG_WRITE(GPIO_OUT_W1TC_REG, mask_clear); //sólo se ejecuta cuando hay pines a resetear.
+  if(mask_set) REG_WRITE(GPIO_OUT_W1TS_REG, mask_set); //sólo se ejecuta cuando hay pines a setear.
 }
 
-uint8_t spi_trasnf_digitalInput(SPIClass *spi, int spiCLK){
+uint8_t spi_transf_digitalInput(SPIClass *spi){
+  /* SN65HVS882
+  Modo:
+    CPHA = 0
+    CPOL = 0
+    MSB first
+  Temporización:
+    FCLK < 100MHZ
+    tW2 (ancho de pulso de LD) > 6ns
+    tREC (tiempo de recup de LD a CLK) > 2ns
+    tSU2 (setup de CE a CLK) > 4ns
+    En principio las llamadas a funciones serían más lentas que los tiempos requeridos por lo que no sería necesario un delay para garantizar LD
+  */
 
-  static const int spiClk = 1000000;  // 1 MHz
-  spi_mux_set(0x00);
-  delayMicroseconds(2000000UL / spiClk); 
-  spi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE3));
-  //digitalWrite(spi->pinSS(), LOW);  //pull SS slow to prep other end for transfer
-  spi_mux_set(0b00000101);
+  /*Carga del registro*/
+  spi_mux_set(CS_IN_LD);
+  spi_mux_set(CS_NONE);
+
+  /*Comunicación serie*/
+  spi->beginTransaction(SPISettings(SPI_CLK, MSBFIRST, SPI_MODE0));
+  spi_mux_set(CS_IN_CE); //cs en bajo
   uint8_t rx = spi->transfer(0x00);
-  spi_mux_set(7);
-  //digitalWrite(spi->pinSS(), HIGH);  //pull ss high to signify end of data transfer
-  spi->endTransaction();
+  spi_mux_set(CS_NONE); //cs en alto 
+  spi->endTransaction(); 
+
   return rx;
 }
 
-uint8_t spi_trasnf_digitalOutput(SPIClass *spi, int spiCLK, uint8_t tx){
-
-  static const int spiClk = 1000000;  // 1 MHz
-  spi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE3));
-  spi_mux_set(0b00000001);
+void spi_transf_digitalOutput(SPIClass *spi, uint8_t tx){
+  /* DRV8804
+  Modo:
+    CPHA = 0
+    CPOL = 0
+    MSB first
+  Temporización:
+    FCLK < 16,13MHz (TCLK > 62ns)
+  */
+  spi->beginTransaction(SPISettings(SPI_CLK, MSBFIRST, SPI_MODE0));
+  spi_mux_set(CS_OUT_LATCH);
   spi->transfer(tx);
-  spi_mux_set(7);
+  spi_mux_set(CS_NONE);
   spi->endTransaction();
-  return rx;
+}
+
+void test_printHex8(uint8_t val) {
+    Serial.print("0x");
+    if (val < 0x10) Serial.print('0');
+    Serial.print(val, HEX);
+}
+
+void test_printBin8(uint8_t val){
+  Serial.print("0b");
+  for (int i = 7; i >= 0; --i) {
+    Serial.print((val >> i) & 0x01);
+  }
+}
+
+void test_digitalIO(uint8_t outputs){
+
+  /*Escribo las salidas*/
+  spi_transf_digitalOutput(vspi, outputs);
+
+  /*Leo las entradas*/
+  uint8_t inputs = spi_transf_digitalInput(vspi);
+
+  /*Muestro resultados*/
+  Serial.print("Salidas = ");
+  test_printHex8(outputs);
+  Serial.print(" = ");
+  test_printBin8(outputs);
+
+  Serial.print(" | Entradas = ");
+  test_printHex8(inputs);
+  Serial.print(" = ");
+  test_printBin8(inputs);
+
+  Serial.println();
+
 }
 
 void setup() {
 
   Serial.begin(115200);
+
+  /*Inicialización SPI*/
   vspi = new SPIClass(VSPI);
-  vspi->begin();
+  vspi->begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_SS_PIN);
 
-  pinMode(CS_A0, OUTPUT);
-  pinMode(CS_A1, OUTPUT);
-  pinMode(CS_A2, OUTPUT);
-
-  spi_mux_set(7);
-
-  timer = timerBegin(0, 80, true);      
-  // timerBegin(timer_num, prescaler, countUp)
-  // prescaler=80 → 1 tick = 1 µs  (80 MHz / 80 = 1 MHz)
-
-  timerAttachInterrupt(timer, &onTimer, true);
-
-  
+  /*Inicialización pines mux*/
+  pinMode(CS_A0_PIN, OUTPUT);
+  pinMode(CS_A1_PIN, OUTPUT);
+  pinMode(CS_A2_PIN, OUTPUT);
+  spi_mux_set(CS_NONE);  
 }
 
 void loop() {
 
-  spi_mux_set(7);
-  delay(10);
-  spi_mux_set(0b00000001);
-  delay(10);
+  static uint8_t sal = 0x01;
+  test_digitalIO(sal);
+  sal <<= 1;
+  if(sal==0) sal=0x01;
+  delay(500);
 }
