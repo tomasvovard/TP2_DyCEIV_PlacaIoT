@@ -48,7 +48,7 @@ uint8_t spi_transf_digitalInput(SPIClass *spi){
   /* SN65HVS882
   Modo:
     CPHA = 0
-    CPOL = 0
+    CPOL = 1
     MSB first
   Temporización:
     FCLK < 100MHZ
@@ -63,7 +63,7 @@ uint8_t spi_transf_digitalInput(SPIClass *spi){
   spi_mux_set(CS_NONE);
 
   /*Comunicación serie*/
-  spi->beginTransaction(SPISettings(SPI_CLK, MSBFIRST, SPI_MODE0));
+  spi->beginTransaction(SPISettings(SPI_CLK, MSBFIRST, SPI_MODE2));
   spi_mux_set(CS_IN_CE); //cs en bajo
   uint8_t rx = spi->transfer(0x00);
   spi_mux_set(CS_NONE); //cs en alto 
