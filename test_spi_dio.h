@@ -1,3 +1,6 @@
+/*Test de funcionamiento del SPI. Conmuta todas las salidas una por una, lee el estado de las entradas y muestra resultados por puerto serie*/
+#pragma once
+
 #include "soc/gpio_reg.h"
 #include <Arduino.h>
 

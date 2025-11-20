@@ -1,3 +1,9 @@
+/*Módulo de vinculación del hardware spi.
+  Permite elegir el CS con el mux.
+  Define una función de lectura de entradas y otra de escritura de salidas. Ambas manejan un byte
+*/
+#pragma once
+
 #include <SPI.h>
 #include <Arduino.h>
 

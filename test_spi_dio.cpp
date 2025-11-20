@@ -1,12 +1,14 @@
 #include "test_spi_dio.h"
 #include "spi_hardware.h"
 
+/*formateo de datos para mostrar por puerto serie como hexa*/
 void test_printHex8(uint8_t val) {
     Serial.print("0x");
     if (val < 0x10) Serial.print('0');
     Serial.print(val, HEX);
 }
 
+/*formateo de datos para mostrar por puerto serie como binario*/
 void test_printBin8(uint8_t val){
   Serial.print("0b");
   for (int i = 7; i >= 0; --i) {
@@ -14,6 +16,7 @@ void test_printBin8(uint8_t val){
   }
 }
 
+/*test unitario*/
 void test_digitalIO(uint8_t outputs){
 
   /*Escribo las salidas*/
@@ -37,6 +40,7 @@ void test_digitalIO(uint8_t outputs){
 
 }
 
+/*secuencia de desplazamiento de un bit por todas las salidas*/
 void test_sequenceDigitalIO(){
 
   static uint8_t sal = 0x01;
