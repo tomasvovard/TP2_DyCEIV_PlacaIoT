@@ -13,7 +13,7 @@
 #define TASK_LG_PERIOD_MS 100
 
 // 5 minutos expresados en "ticks" de la tarea de lógica
-#define AUTO_5MIN_MS        (5UL*60UL*1000UL)
+#define AUTO_5MIN_MS        (10UL*1000UL)//(5UL*60UL*1000UL)
 #define AUTO_5MIN_TICKS     (AUTO_5MIN_MS / TASK_LG_PERIOD_MS)
 
 typedef enum {AUTO_HIGH, AUTO_ONE_PUMP, AUTO_REST, AUTO_TWO_PUMP} fsm_auto_t;

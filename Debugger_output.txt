@@ -1,0 +1,47 @@
+13:42:13.096 -> ets Jul 29 2019 12:21:46
+13:42:13.096 -> 
+13:42:13.096 -> rst:0x1 (POWERON_RESET),boot:0x37 (SPI_FAST_FLASH_BOOT)
+13:42:13.096 -> configsip: 0, SPIWP:0xee
+13:42:13.096 -> clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+13:42:13.096 -> mode:DIO, clock div:1
+13:42:13.096 -> load:0x3fff0030,len:4980
+13:42:13.096 -> load:0x40078000,len:16612
+13:42:13.096 -> load:0x40080400,len:3500
+13:42:13.096 -> entry 0x400805b4
+13:42:13.195 -> mefModo | Btn Auto: 0; Btn B1: 0; Btn B2: 0; Btn off: 0; Motor 1: 0; Motor 2: 0
+13:42:17.135 -> mefModo: MODE_MANUAL
+13:42:28.712 -> mefModo: MODE_OFF
+13:42:31.905 -> mefModo: MODE_AUTO
+13:42:32.007 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:42:35.893 -> mefAuto: AUTO_ONE_PUMP
+13:42:35.893 -> mefAuto | Sensor Alto: 0; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 1; Motor 2: 0
+13:42:42.292 -> mefAuto: AUTO_REST
+13:42:42.292 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:42:52.311 -> mefAuto: AUTO_HIGH
+13:42:52.311 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:42:59.698 -> mefAuto: AUTO_ONE_PUMP
+13:42:59.698 -> mefAuto | Sensor Alto: 0; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 1
+13:43:03.724 -> mefAuto: AUTO_REST
+13:43:03.724 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:43:13.738 -> mefAuto: AUTO_HIGH
+13:43:13.738 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:43:16.012 -> mefAuto: AUTO_ONE_PUMP
+13:43:16.012 -> mefAuto | Sensor Alto: 0; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 1; Motor 2: 0
+13:43:26.698 -> mefAuto: AUTO_TWO_PUMP
+13:43:26.698 -> mefAuto | Sensor Alto: 0; Sensor Medio: 0; Sensor Bajo: 1; Motor 1: 1; Motor 2: 1
+13:43:35.235 -> mefAuto: AUTO_REST
+13:43:35.235 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:43:45.192 -> mefAuto: AUTO_ONE_PUMP
+13:43:45.192 -> mefAuto | Sensor Alto: 0; Sensor Medio: 0; Sensor Bajo: 1; Motor 1: 0; Motor 2: 1
+13:43:46.824 -> mefAuto: AUTO_TWO_PUMP
+13:43:46.824 -> mefAuto | Sensor Alto: 0; Sensor Medio: 0; Sensor Bajo: 1; Motor 1: 1; Motor 2: 1
+13:43:53.318 -> mefAuto: AUTO_REST
+13:43:53.318 -> mefAuto | Sensor Alto: 1; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 0; Motor 2: 0
+13:44:03.299 -> mefAuto: AUTO_ONE_PUMP
+13:44:03.299 -> mefAuto | Sensor Alto: 0; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 1; Motor 2: 0
+13:44:10.590 -> mefModo: MODE_OFF
+13:44:13.916 -> mefModo: MODE_AUTO
+13:44:14.015 -> mefAuto: AUTO_ONE_PUMP
+13:44:14.015 -> mefAuto | Sensor Alto: 0; Sensor Medio: 1; Sensor Bajo: 1; Motor 1: 1; Motor 2: 0
+13:44:19.189 -> mefModo: MODE_MANUAL
+13:44:27.498 -> mefModo: MODE_AUTO

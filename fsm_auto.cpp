@@ -1,5 +1,8 @@
 #include "fsm_auto.h"
 
+/*variable de debug*/
+static bool update = true;
+
 /*variable de estado de la mef*/
 static fsm_auto_t state_auto;
 
@@ -63,6 +66,8 @@ void fsm_auto(const inputs_t *inputs, outputs_t *outputs){
         state_auto = AUTO_ONE_PUMP;
         auto_p1_on = !last_pump;
         auto_p2_on = last_pump;
+        Serial.println("mefAuto: AUTO_ONE_PUMP");
+        update = true;
       }
       break;
 
@@ -72,6 +77,8 @@ void fsm_auto(const inputs_t *inputs, outputs_t *outputs){
         state_auto = AUTO_TWO_PUMP;
         auto_p1_on = true;
         auto_p2_on = true;
+        Serial.println("mefAuto: AUTO_TWO_PUMP");
+        update = true;
       }
 
       if(sn_high){
@@ -80,6 +87,8 @@ void fsm_auto(const inputs_t *inputs, outputs_t *outputs){
         auto_p2_on = false;
         rest_ticks = AUTO_5MIN_TICKS;
         last_pump = !last_pump;
+        Serial.println("mefAuto: AUTO_REST");
+        update = true;
       }
       break;
 
@@ -94,15 +103,22 @@ void fsm_auto(const inputs_t *inputs, outputs_t *outputs){
             state_auto = AUTO_TWO_PUMP;
             auto_p1_on = true;
             auto_p2_on = true;
+            Serial.println("mefAuto: AUTO_TWO_PUMP");
+            update = true;
           }
           else{
             state_auto = AUTO_ONE_PUMP;
             auto_p1_on = !last_pump;
             auto_p2_on = last_pump;
+            Serial.println("mefAuto: AUTO_ONE_PUMP");
+            update = true;
           }
         }
-        else
+        else{
           state_auto = AUTO_HIGH;
+          Serial.println("mefAuto: AUTO_HIGH");
+          update = true;
+        }
       }
       break;
 
@@ -114,10 +130,27 @@ void fsm_auto(const inputs_t *inputs, outputs_t *outputs){
         auto_p1_on = false;
         auto_p2_on = false;
         last_pump = !last_pump;
+        Serial.println("mefAuto: AUTO_REST");
+        update = true;
       }
       break;
   }
 
   outputs->motor1 = auto_p1_on;
   outputs->motor2 = auto_p2_on;
+
+  if(update){
+    Serial.print("mefAuto | Sensor Alto: ");
+    Serial.print(sn_high);
+    Serial.print("; Sensor Medio: ");
+    Serial.print(sn_mid);
+    Serial.print("; Sensor Bajo: ");
+    Serial.print(sn_low);
+    Serial.print("; Motor 1: ");
+    Serial.print(auto_p1_on);
+    Serial.print("; Motor 2: ");
+    Serial.print(auto_p2_on);
+    Serial.println();
+    update = false;
+  }
 }
